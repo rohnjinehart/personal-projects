@@ -1,0 +1,60 @@
+import tweepy
+from tweepy import OAuthHandler
+import mysql.connector
+from mysql.connector import Error
+
+consumer_key = c2VZYHavnJpVkJ2BO5RdG4xi1
+consumer_secret = 9fqZE9dczixzDjh1v70qzxRZ0qaFbrV4vUbncjRW29iBaXAxDr
+access_token = 1174047944-Nth2voi7TlWQrHD1roYUS2pT2iAIMVg13Fz72Cc
+access_secret = ClKes4JuDfctDiYdqNS8pCfCJVHa0zUGIIPOVmeIUd9Bt
+
+def authenticate_twitter(consumer_key, consumer_secret, access_token, access_secret):
+    auth = OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_secret)
+    api = tweepy.API(auth)
+    try:
+        api.verify_credentials()
+        print("Authentication OK")
+        return api
+    except Exception as e:
+        print(f"Error during authentication: {e}")
+        return None
+
+def connect_to_database(host, database, user, password):
+    try:
+        connection = mysql.connector.connect(host=host, database=database, user=user, password=password)
+        if connection.is_connected():
+            db_info = connection.get_server_info()
+            print(f"Connected to MySQL server version {db_info}")
+            return connection
+    except Error as e:
+        print(f"Error while connecting to MySQL: {e}")
+        return None
+
+def fetch_tweets(api, search_words, date_since, num_tweets):
+    tweets = tweepy.Cursor(api.search, q=search_words, lang="en", since=date_since).items(num_tweets)
+    return tweets
+
+def save_tweets_to_db(connection, tweets):
+    cursor = connection.cursor()
+    try:
+        for tweet in tweets:
+            insert_query = """
+            INSERT INTO tweets (id, text, created_at, user_name, location, retweet_count, favorite_count)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
+            tweet_data = (
+                tweet.id,
+                tweet.text,
+                tweet.created_at,
+                tweet.user.screen_name,
+                tweet.user.location,
+                tweet.retweet_count,
+                tweet.favorite_count
+            )
+            cursor.execute(insert_query, tweet_data)
+            connection.commit()
+    except Error as e:
+        print(f"Failed to insert record into MySQL table: {e}")
+    finally:
+        cursor.close()

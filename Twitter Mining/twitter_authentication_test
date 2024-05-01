@@ -1,0 +1,18 @@
+import pytest
+from unittest.mock import patch
+from miner import authenticate_twitter
+
+@pytest.mark.parametrize("status, expected", [
+    (True, "API object"),  # Assuming the API object is mocked
+    (False, None)
+])
+def test_authenticate_twitter(status, expected):
+    with patch('tweepy.OAuthHandler') as mock_auth:
+        with patch('tweepy.API') as mock_api:
+            mock_auth.return_value.set_access_token.return_value = None
+            if status:
+                mock_api.return_value.verify_credentials.return_value = None
+                assert authenticate_twitter("key", "secret", "token", "token_secret") is not None
+            else:
+                mock_api.return_value.verify_credentials.side_effect = Exception("Authentication failed")
+                assert authenticate_twitter("key", "secret", "token", "token_secret") is None
