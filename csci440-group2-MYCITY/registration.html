@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    
+    <!-- reCAPTCHA v3 API script -->
+    <script src="[redacted]"></script>
+    
+    <!-- External JavaScript -->
+    <script src="api.js" defer></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, select, button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .password-requirements {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .password-requirements ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+
+        .requirement {
+            color: #dc3545;
+        }
+
+        .requirement.met {
+            color: #28a745;
+        }
+
+        #password-strength {
+            height: 5px;
+            margin: 5px 0;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #password-strength-bar {
+            height: 100%;
+            width: 0%;
+            background-color: transparent;
+            transition: width 0.3s, background-color 0.3s;
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 35px;
+            cursor: pointer;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        #recaptcha-error {
+            color: #dc3545;
+            font-size: 14px;
+            margin: 5px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Register</h2>
+        
+        <form id="registerForm">
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            
+            <input type="email" id="email" name="email" placeholder="Email" required>
+            
+            <div class="password-field">
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                <span class="toggle-password">👁️ Show</span>
+            </div>
+            
+            <div id="password-strength">
+                <div id="password-strength-bar"></div>
+            </div>
+            
+            <div class="password-requirements">
+                <p><strong>Password Requirements:</strong></p>
+                <ul>
+                    <li id="req-length" class="requirement">Minimum 8 characters</li>
+                    <li id="req-uppercase" class="requirement">At least one uppercase letter</li>
+                    <li id="req-number" class="requirement">At least one number</li>
+                    <li id="req-special" class="requirement">At least one special character</li>
+                </ul>
+            </div>
+            
+            <input type="text" id="full_name" name="full_name" placeholder="Full Name" required>
+            
+            <input type="tel" id="phone_number" name="phone_number" placeholder="Phone Number" pattern="[0-9]{10}" title="10-digit phone number">
+            
+            <input type="hidden" id="role" name="role" value="employee">
+            
+            <!-- Hidden field for reCAPTCHA v3 token -->
+            <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
+            <div id="recaptcha-error">Please verify you're not a robot</div>
+            
+            <button type="submit" id="submitBtn">Register</button>
+        </form>
+        
+        <div id="message"></div>
+        
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+    <!--script src="darkMode.js"></script-->
+</body>
+</html>

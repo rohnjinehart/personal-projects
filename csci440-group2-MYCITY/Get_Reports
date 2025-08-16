@@ -1,0 +1,71 @@
+<?php
+require_once 'session.php';
+requireLogin();
+
+// Database connection configuration
+$servername = "[redacted]";
+$username = "[redacted]";
+$password = "[redacted]";
+$dbname = "[redacted";
+
+// Create a new MySQLi connection object
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check if the connection failed
+if ($conn->connect_error) {
+    die(json_encode(['error' => 'Connection failed: ' . $conn->connect_error]));
+}
+
+// Get geolocation parameters from request
+$userLat = isset($_GET['userLat']) ? floatval($_GET['userLat']) : null;
+$userLng = isset($_GET['userLng']) ? floatval($_GET['userLng']) : null;
+$radius = isset($_GET['radius']) ? floatval($_GET['radius']) : 0.5; // Default 0.5 mile radius
+
+// Base SQL query
+$sql = "SELECT id, title, description, latitude, longitude, status FROM reports";
+
+// If geolocation parameters are provided, filter by distance
+if ($userLat !== null && $userLng !== null) {
+    // Haversine formula for distance calculation in miles
+    $sql = "SELECT 
+                id, 
+                title, 
+                description, 
+                latitude, 
+                longitude, 
+                status,
+                (3959 * ACOS(
+                    COS(RADIANS($userLat)) * 
+                    COS(RADIANS(latitude)) * 
+                    COS(RADIANS(longitude) - RADIANS($userLng)) + 
+                    SIN(RADIANS($userLat)) * 
+                    SIN(RADIANS(latitude))
+                )) AS distance
+            FROM reports
+            HAVING distance <= $radius
+            ORDER BY distance";
+}
+
+// Execute the query
+$result = $conn->query($sql);
+
+// Initialize reports array
+$reports = [];
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        // Remove distance from the response if not needed in frontend
+        if (isset($row['distance'])) {
+            unset($row['distance']);
+        }
+        $reports[] = $row;
+    }
+}
+
+// Close connection
+$conn->close();
+
+// Set response header and return JSON
+header('Content-Type: application/json');
+echo json_encode($reports);
+?>

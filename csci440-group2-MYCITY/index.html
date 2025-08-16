@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- Declares HTML5 document type -->
+<html lang="en">
+<!-- Root HTML element with language set to English -->
+<head>
+    <!-- Document metadata container -->
+    <meta charset="UTF-8">
+    <!-- Specifies character encoding as UTF-8 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Ensures proper mobile rendering and zooming -->
+    <title>Landing Page</title>
+    <!-- Page title shown in browser tab -->
+    
+    <!-- Embedded CSS styles -->
+    <style>
+        /* Base styling for the body element */
+        body {
+            font-family: Arial, sans-serif;  /* Default font */
+            margin: 0;                      /* Remove default margin */
+            padding: 0;                     /* Remove default padding */
+            display: flex;                 /* Enables flexbox layout */
+            justify-content: center;       /* Centers content horizontally */
+            align-items: center;           /* Centers content vertically */
+            height: 100vh;                 /* Full viewport height */
+            background-color: #f0f0f0;     /* Light gray background */
+        }
+
+        /* Container for centered content */
+        .container {
+            text-align: center;            /* Centers text and inline elements */
+            width: 100%;                   /* Full width of parent */
+            padding: 20px;                /* Internal spacing */
+            box-sizing: border-box;       /* Includes padding in width calculation */
+        }
+
+        /* Main heading style */
+        h1 {
+            font-size: 24px;             /* Medium-large text size */
+            margin-bottom: 20px;          /* Space below heading */
+            color: #333;                  /* Dark gray text color */
+        }
+
+        /* Button link styling */
+        a.btn {
+            display: inline-block;        /* Allows setting dimensions */
+            margin: 10px;                /* Space around buttons */
+            padding: 15px 25px;          /* Button size */
+            font-size: 16px;            /* Readable text size */
+            font-weight: bold;           /* Bold text */
+            border: none;               /* No border */
+            border-radius: 5px;          /* Rounded corners */
+            background-color: #007bff;   /* Bootstrap-like blue */
+            color: #fff;                 /* White text */
+            text-decoration: none;      /* No underline */
+            text-align: center;          /* Center text */
+            width: 100%;                /* Full width of container */
+            box-sizing: border-box;      /* Includes padding in width */
+            transition: background-color 0.3s ease; /* Smooth hover effect */
+        }
+
+        /* Button hover state */
+        a.btn:hover {
+            background-color: #0056b3;   /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+    <!-- Main page content -->
+    <div class="iphone-frame">
+        <!-- Content container (note: iphone-frame class isn't defined in CSS) -->
+        <div class="container">
+            <h1>Welcome to GridFix</h1>  <!-- Application title -->
+            
+            <!-- Login button linking to login page -->
+            <a href="login.html" class="btn">Login</a>
+            
+            <!-- Registration button linking to registration page -->
+            <a href="registration.html" class="btn">Register</a>
+        </div>
+    </div>
+<!--script src="darkMode.js"></script-->
+</body>
+</html>

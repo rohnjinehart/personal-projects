@@ -1,0 +1,33 @@
+<?php
+require_once 'session.php';
+requireLogin();
+
+// Database connection
+$servername = "[redacted]";
+$username = "[redacted]";
+$password = "[redacted]";
+$dbname = "[redacted]";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Get all users except current user
+$sql = "SELECT id, username, role FROM users WHERE id != ? ORDER BY username";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $_SESSION['user_id']);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$users = [];
+while ($row = $result->fetch_assoc()) {
+    $users[] = $row;
+}
+
+header('Content-Type: application/json');
+echo json_encode($users);
+
+$conn->close();
+?>

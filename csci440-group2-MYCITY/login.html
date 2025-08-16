@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<!-- HTML5 document type declaration -->
+<html lang="en">
+<!-- Root HTML element with language set to English -->
+<head>
+    <!-- Document metadata -->
+    <meta charset="UTF-8"> <!-- Character encoding -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive viewport -->
+    <title>Login</title> <!-- Page title -->
+    
+    <!-- Embedded CSS styles -->
+    <style>
+        /* Base body styling - centers content vertically and horizontally */
+        body {
+            font-family: Arial, sans-serif;  /* Default font */
+            margin: 0;                      /* Remove default margin */
+            padding: 0;                     /* Remove default padding */
+            display: flex;                  /* Flexbox layout */
+            justify-content: center;        /* Horizontal centering */
+            align-items: center;            /* Vertical centering */
+            height: 100vh;                  /* Full viewport height */
+            background-color: #e0e0e0;      /* Light gray background */
+        }
+
+        /* Container for login form */
+        .container {
+            width: 90%;                     /* Responsive width */
+            max-width: 400px;               /* Maximum width */
+            padding: 20px;                  /* Internal spacing */
+            background-color: #fff;         /* White background */
+            border-radius: 10px;            /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Subtle shadow */
+        }
+
+        /* Form layout */
+        form {
+            display: flex;                  /* Flexbox layout */
+            flex-direction: column;         /* Stack children vertically */
+        }
+
+        /* Input and button styling */
+        input, button {
+            margin: 10px 0;                 /* Vertical spacing */
+            padding: 10px;                  /* Internal spacing */
+            font-size: 14px;                /* Text size */
+            border: 1px solid #ddd;         /* Light gray border */
+            border-radius: 5px;             /* Rounded corners */
+        }
+
+        /* Button specific styling */
+        button {
+            background-color: #007bff;      /* Bootstrap blue */
+            color: #fff;                    /* White text */
+            cursor: pointer;                /* Pointer cursor on hover */
+        }
+
+        /* Button hover state */
+        button:hover {
+            background-color: #0056b3;      /* Darker blue */
+        }
+
+        /* Message container (initially hidden) */
+        #message {
+            margin-top: 15px;               /* Space above message */
+            padding: 10px;                  /* Internal spacing */
+            border-radius: 5px;             /* Rounded corners */
+            display: none;                  /* Hidden by default */
+        }
+
+        /* Success message styling */
+        .success {
+            background-color: #d4edda;      /* Light green */
+            color: #155724;                 /* Dark green text */
+        }
+
+        /* Error message styling */
+        .error {
+            background-color: #f8d7da;      /* Light red */
+            color: #721c24;                 /* Dark red text */
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main content container -->
+    <div class="container">
+        <h2>Login</h2> <!-- Form title -->
+        
+        <!-- Login form -->
+        <form id="loginForm">
+            <!-- Username input -->
+            <input type="text" id="loginUsername" name="username" placeholder="Username" required>
+            
+            <!-- Password input -->
+            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+            
+            <!-- Submit button -->
+            <button type="submit">Login</button>
+        </form>
+        
+        <!-- Message container for feedback -->
+        <div id="message"></div>
+        
+        <!-- Registration and password reset links -->
+        <p>Don't have an account? <a href="registration.html">Register here</a></p>
+        <p>Forgot your password? <a href="#" id="forgotPasswordLink">Reset it here</a></p>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="passwordResetModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Reset Password</h3>
+            <form id="passwordResetForm">
+                <input type="email" id="resetEmail" name="email" placeholder="Your email address" required>
+                <div class="modal-buttons">
+                    <button type="submit">Send Reset Link</button>
+                    <button type="button" id="cancelReset">Cancel</button>
+                </div>
+            </form>
+            <div id="resetMessage" style="margin-top: 15px; display: none;"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript for form handling -->
+    <script>
+        // Add submit event listener to the form
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            // Collect form data into an object
+            const formData = {
+                username: document.getElementById('loginUsername').value,
+                password: document.getElementById('loginPassword').value,
+                login: true // Flag to indicate login request
+            };
+
+            // Send data to server using fetch API
+            fetch('userAuth.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded', // Form data content type
+                },
+                body: new URLSearchParams(formData) // Convert object to URL-encoded format
+            })
+            .then(response => response.json()) // Parse JSON response
+            .then(data => {
+                const messageEl = document.getElementById('message');
+                messageEl.style.display = 'block'; // Show message div
+                
+                if (data.success) {
+                    // Successful login
+                    messageEl.className = 'success';
+                    messageEl.textContent = 'Login successful! Redirecting...';
+                    
+                    // Redirect to index page after 1 second
+                    setTimeout(() => {
+                        window.location.href = 'index.php';
+                    }, 1000);
+                } else {
+                    // Failed login
+                    messageEl.className = 'error';
+                    messageEl.textContent = data.message || 'Invalid credentials'; // Show server message or default
+                }
+            })
+            .catch(error => {
+                // Handle network errors
+                console.error('Error:', error);
+                const messageEl = document.getElementById('message');
+                messageEl.textContent = 'An error occurred. Please try again.';
+                messageEl.className = 'error';
+                messageEl.style.display = 'block';
+            });
+        });
+
+        // Password reset functionality
+        document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('passwordResetModal').style.display = 'flex';
+        });
+
+        document.getElementById('cancelReset').addEventListener('click', function() {
+            document.getElementById('passwordResetModal').style.display = 'none';
+            document.getElementById('resetMessage').style.display = 'none';
+        });
+
+        document.getElementById('passwordResetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('resetEmail').value;
+            const messageEl = document.getElementById('resetMessage');
+            
+            fetch('userAuth.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    request_password_reset: true,
+                    email: email
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                messageEl.style.display = 'block';
+                if (data.success) {
+                    messageEl.className = 'success';
+                    messageEl.textContent = data.message || 'If an account exists with this email, a password reset link has been sent.';
+                    document.getElementById('resetEmail').value = '';
+                    setTimeout(() => {
+                        document.getElementById('passwordResetModal').style.display = 'none';
+                        messageEl.style.display = 'none';
+                    }, 3000);
+                } else {
+                    messageEl.className = 'error';
+                    messageEl.textContent = data.message || 'An error occurred while processing your request.';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                messageEl.style.display = 'block';
+                messageEl.className = 'error';
+                messageEl.textContent = 'An error occurred. Please try again.';
+            });
+        });
+    </script>
+    <!--script src="darkMode.js"></script-->
+</body>
+</html>
